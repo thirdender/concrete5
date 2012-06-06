@@ -1,21 +1,14 @@
-<?php  defined('C5_EXECUTE') or die('Access Denied');
-
-$form = Loader::helper('form');
-$ih = Loader::helper('concrete/interface');
-$txt = Loader::helper('text');
-?>
+<?php  defined('C5_EXECUTE') or die('Access Denied');?>
 
 <?php echo Loader::helper('concrete/dashboard') -> getDashboardPaneHeaderWrapper(t('Batch SEO'), t('Do All Your SEO-ing in One Place.'), false, false); ?>
+<form action="<?=$this->action('view')?>">
+	<div class="ccm-pane-options">
+			search form here
+	</div>
+</form>
+
 <div class="ccm-pane-body">
-<?php 
-$keywords = $searchRequest['keywords'];
-/*
-$soargs = array();
-$soargs['searchInstance'] = $searchInstance;
-$soargs['sitemap_select_mode'] = $sitemap_select_mode;
-$soargs['sitemap_select_callback'] = $sitemap_select_callback;
-$soargs['searchDialog'] = $searchDialog;
-*/
+<?php
 if (count($pages) > 0) { ?>	
 			
 	<style type="text/css">
@@ -110,20 +103,21 @@ if (count($pages) > 0) { ?>
 							<div class="updateButton">
 							<br />
 							<br />
-							<?php print $ih -> submit('Save', $formID, $buttonAlign = 'right', 'seoSubmit', array('title' => $cID)); ?>
+							<?php print $concrete_interface->submit('Save', $formID, $buttonAlign = 'right', 'seoSubmit', array('title' => $cID)); ?>
 							</div>
 							<div>
 							<img style="float: left; display: none;" id="throbber<?php echo $cID ?>"  class="throbber<?php echo $cID ?>" src="<?php echo ASSETS_URL_IMAGES . '/throbber_white_32.gif' ?>" />
 							</div>
 							</form>
 				</div>
-				<div style="clear: left"></div>	
+			</div>
+			<div style="clear: left"></div>	
 		<?php } ?>
 	
 	<?php } else { ?>
 		<div class="ccm-results-list-none"><?php echo t('No pages found.')?></div>
 	<?php  }
-	print $ih->button('Update All', '#', $buttonAlign='right', $innerClass=null, $args = array('id'=>'allSeoSubmit'));
+	print $concrete_interface->button('Update All', '#', $buttonAlign='right', $innerClass=null, $args = array('id'=>'allSeoSubmit'));
  	?>
 	<div style="clear: left"></div>
 	<script type="text/javascript">
@@ -168,8 +162,8 @@ if (count($pages) > 0) { ?>
 	});
 	</script>
 	<?php $pageList -> displaySummary(); ?>
-	</div>
-	<div class="ccm-pane-footer">
-		<?php $pageList->displayPagingV2(); ?>
-	</div>
+</div>
+<div class="ccm-pane-footer">
+	<?php $pageList->displayPagingV2(); ?>
+</div>
 <?php echo Loader::helper('concrete/dashboard') -> getDashboardPaneFooterWrapper(false); ?>

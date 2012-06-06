@@ -4,7 +4,7 @@ Loader::model('page_list');
 Loader::controller('/dashboard/base');
 class DashboardSystemSeoPageDataController extends Controller {
 	
-	public $helpers = array('form');
+	public $helpers = array('form', 'concrete/interface');
 	
 	public function view() {
 		$html = Loader::helper('html');
