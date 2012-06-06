@@ -10,8 +10,8 @@ class DashboardSystemSeoPageDataController extends Controller {
 		$html = Loader::helper('html');
 		$pageList = $this->getRequestedSearchResults();
 		if (is_object($pageList)) {
-			$searchInstance = 'page' . time();
-			$this->addHeaderItem('<script type="text/javascript">$(function() { ccm_sitemapSetupSearch(\'' . $searchInstance . '\'); });</script>');
+			//$searchInstance = 'page' . time();
+			//$this->addHeaderItem('<script type="text/javascript">$(function() { ccm_sitemapSetupSearch(\'' . $searchInstance . '\'); });</script>');
 			$pages = $pageList->getPage();
 					
 			$this->set('pageList', $pageList);		
