@@ -28,8 +28,12 @@ class DashboardSystemSeoPageDataController extends Controller {
         $success = 'success';
         $cID = $this->post('cID');
         $c = Page::getByID($cID);
-        $c->setAttribute('meta_title',$this->post('meta_title'));
-        $c->setAttribute('meta_description',$this->post('meta_description'));
+        if (trim(sprintf(PAGE_TITLE_FORMAT, SITE, $c->getCollectionName())) != trim($this->post('meta_title')) && $this->post('meta_title')) {
+        	 $c->setAttribute('meta_title',trim($this->post('meta_title')));
+		}
+		if (trim(htmlspecialchars($pageDescription, ENT_COMPAT, APP_CHARSET)) != trim($this->post('meta_description')) && $this->post('meta_description'))  {
+        	$c->setAttribute('meta_description', trim($this->post('meta_description')));
+		}
     	$c->setAttribute('meta_keywords',$this->post('meta_keywords'));
         $cHandle = $this->post('collection_handle');
         $c->update(array('cHandle'=>$cHandle));
@@ -41,6 +45,7 @@ class DashboardSystemSeoPageDataController extends Controller {
         echo Loader::helper('json')->encode($result);
         exit;
     }
+	
 	
 	public function getRequestedSearchResults() {
 	
@@ -71,6 +76,20 @@ class DashboardSystemSeoPageDataController extends Controller {
 			$pageList->filterByName($cvName);
 		}
 
+		if ($req['cParentIDSearchField'] > 0) {
+			if ($req['cParentAll'] == 1) {
+				$pc = Page::getByID($req['cParentIDSearchField']);
+				$cPath = $pc->getCollectionPath();
+				$pageList->filterByPath($cPath);
+			} else {
+				$pageList->filterByParentID($req['cParentIDSearchField']);
+			}
+			$parentDialogOpen = 1;
+		}
+
+		$keywords = htmlentities($req['keywords'], ENT_QUOTES, APP_CHARSET);
+		$pageList->filterByKeywords($keywords);
+
 		if ($req['numResults']) {
 			$pageList->setItemsPerPage($req['numResults']);
 		}
@@ -79,6 +98,21 @@ class DashboardSystemSeoPageDataController extends Controller {
 			$pageList->filterByCollectionTypeID($req['ctID']);
 		}
 
+		//if ($req['noTitle']){
+			//$this->filter('PagePaths.cPath', NULL, '=');
+		//}
+
+		if ($_REQUEST['noTitle'] == 1){
+			$pageList->filter('CollectionSearchIndexAttributes.ak_meta_title', NULL ,'=');
+			$this->set('titleCheck', true);
+		}
+		
+		if ($_REQUEST['noDescription'] == 1){
+			$pageList->filter('CollectionSearchIndexAttributes.ak_meta_description', NULL ,'=');
+			$this->set('descCheck', true);
+		}
+		
+		/* 
 		if (is_array($req['selectedSearchField'])) {
 			foreach($req['selectedSearchField'] as $i => $item) {
 				// due to the way the form is setup, index will always be one more than the arrays
@@ -185,9 +219,10 @@ class DashboardSystemSeoPageDataController extends Controller {
 					}
 				}
 			}
-		}
+		} */ 
 
 		$this->set('searchRequest', $req);
+		$this->set('parentDialogOpen', $parentDialogOpen);
 		return $pageList;
 	}
 }

@@ -1,17 +1,9 @@
 <?php  defined('C5_EXECUTE') or die('Access Denied');?>
 
-<?php echo Loader::helper('concrete/dashboard') -> getDashboardPaneHeaderWrapper(t('Batch SEO'), t('Do All Your SEO-ing in One Place.'), false, false); ?>
-<form action="<?=$this->action('view')?>">
-	<div class="ccm-pane-options">
-			search form here
-	</div>
-</form>
-
-<div class="ccm-pane-body">
-<?php
-if (count($pages) > 0) { ?>	
-			
-	<style type="text/css">
+<?php echo Loader::helper('concrete/dashboard') -> getDashboardPaneHeaderWrapper(t('Batch SEO'), t('Do All Your SEO-ing in One Place.'), false, false); 
+$pageSelector = Loader::helper('form/page_selector');
+?>
+<style type="text/css">
 		.rowHolder {
 			width: 100%;
 		}
@@ -19,9 +11,14 @@ if (count($pages) > 0) { ?>
 		.rowHolder div {
 			float: left;
 			margin: 20px;
-			min-height: 75px;
+			min-height: 100px;
 		}
-	
+		
+		.rowHolder div.metaInput {
+			float: none;
+			margin: 0px;
+			min-height: 0px;
+		}
 		.rowHolder div.headings {
 			min-height: 50px;
 		}
@@ -29,7 +26,74 @@ if (count($pages) > 0) { ?>
 		.rowHolder.stripe {
 			background: #eee;
 		}
+		
+		.rowHolder.stripe .help-inline {
+			color: #999;
+		}
+		
 	</style>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$('#searchUnderParent').click(function(){
+			$('#parentOptions').slideDown();
+		});
+	});
+	</script>
+<form action="<?=$this->action('view')?>">
+	<div class="ccm-pane-options">
+			<legend>SEARCHIN</legendl><form id="searchForm" action="<?php echo View::url('/dashboard/batch_seo/', 'getRequestedSearchResults')?>" method="post" class="searchForm">
+				<fieldset>
+				<div class="span5">
+					<div class="input">
+						<label for > <?php echo $form->text('keywords'); ?><br/></label>
+					</div>
+				</div>
+				<a style="margin-top: 15px;" id="searchUnderParent" href="#">Search Under Parent</a>
+				<div id="parentOptions" style="display: <?php echo $parentDialogOpen ? 'block' : 'none'; ?>">
+					<?php print $pageSelector->selectPage('cParentIDSearchField', 'ccm_selectSitemapNode');?>
+					<span class="ccm-search-option" search-field="parent">
+					<br/><strong><?=t('Search All Children?')?></strong><br/>
+					<ul class="inputs-list">
+						<li><label><?=$form->radio('cParentAll', 0, false)?> <span><?=t('No')?></label></li>
+						<li><label><?=$form->radio('cParentAll', false)?> <span><?=t('Yes')?></span></label></li>
+					</ul>
+				</div>
+				<div class = "clearfix">
+					<ul class="inputs-list">
+						<li><label><?php echo $form->checkbox('noTitle', 1, $titleCheck, '');  ?><span><?=t(' No Meta Title'); ?></span></label></li>
+					</ul>
+				</div>
+				<div class = "clearfix">
+					<div class="input>"
+						<ul class="inputs-list">
+							<li><label><?php echo $form->checkbox('noDescription', 1, $descCheck, '');  ?><span><?=t(' No Meta Description'); ?></span></label></li>
+						</ul>
+					</div>
+				</div>
+				<div class = "clearfix">
+					<div class="input>"
+						<?=$form->label('numResults', t('# Per Page'))?>
+						<div class="input">
+							<?=$form->select('numResults', array(
+								'10' => '10',
+								'25' => '25',
+								'50' => '50',
+								'100' => '100',
+								'500' => '500'
+							), $searchRequest['numResults'], array('style' => 'width:65px'))?>
+						</div>
+					</div>
+				</div>
+				<?php print $concrete_interface->submit('search', $formID, $buttonAlign = 'right', 'searchSubmit'); ?>
+				</fieldset>
+			</form>
+			
+	</div>
+</form>
+
+<div class="ccm-pane-body">
+<?php
+if (count($pages) > 0) { ?>	
 			
 	<?php $i = 0;
 		foreach($pages as $cobj) {
@@ -53,13 +117,13 @@ if (count($pages) > 0) { ?>
 								<strong><?php echo t('Page Type'); ?></strong>
 								<br />
 								<br />
-								<?php echo $cobj -> getCollectionTypeName() ? $cobj -> getCollectionTypeName() : 'Single Page'; ?>
+								<?php echo $cobj->getCollectionTypeName() ? $cobj -> getCollectionTypeName() : 'Single Page'; ?>
 							</div>
 							
 							<div class="headings"><strong><?php echo t('Modified'); ?></strong>
 							<br />
 							<br />
-							<?php echo $cobj -> getCollectionDateLastModified() ? $cobj -> getCollectionDateLastModified() : ''; ?>
+							<?php echo $cobj->getCollectionDateLastModified() ? $cobj -> getCollectionDateLastModified() : ''; ?>
 							</div>
 							
 							<div class="headings"><strong><?php echo t('Path'); ?></strong>
@@ -79,25 +143,46 @@ if (count($pages) > 0) { ?>
 							<div style="clear: left;"><strong><?php echo t('Meta Title'); ?></strong>
 							<br />
 							<br />
-							<?php echo $form -> text('meta_title', $cobj -> getAttribute('meta_title'), array('title' => $cID)); ?>
+								<div class="metaInput">
+								<?php $pageTitle = $cobj->getCollectionName();
+								$pageTitle = htmlspecialchars($pageTitle, ENT_COMPAT, APP_CHARSET);
+								$autoTitle = sprintf(PAGE_TITLE_FORMAT, SITE, $pageTitle);
+								$titleInfo = array('title' => $cID);
+								if(strlen($cobj->getAttribute('meta_title')) <= 0) {
+									 $titleInfo[disabled] = 'disabled'; 
+								}
+								echo $form->text('meta_title', $cobj->getAttribute('meta_title') ? $cobj->getAttribute('meta_title') : $autoTitle, $titleInfo); 
+								echo $titleInfo[disabled] ? '<br /><span class="help-inline">Default value. Click to edit.</span>' : '' ?>
+								</div>
 							</div>
 							
+						
 							<div><strong><?php echo t('Meta Description'); ?></strong>
 							<br />
 							<br />
-							<?php echo $form -> textarea('meta_description', $cobj -> getAttribute('meta_description'), array('title' => $cID)); ?>
+								<div class="metaInput">
+								<?php $pageDescription = $cobj->getCollectionDescription();
+								$autoDesc = htmlspecialchars($pageDescription, ENT_COMPAT, APP_CHARSET);
+								$descInfo = array('title' => $cID); 
+								if(strlen($cobj -> getAttribute('meta_description')) <= 0) {
+									$descInfo[disabled] = 'disabled'; 
+								}
+								echo $form->textarea('meta_description', $cobj -> getAttribute('meta_description') ? $cobj -> getAttribute('meta_description') : $autoDesc, $descInfo); 
+								echo $descInfo[disabled] ? '<br /><span class="help-inline">Default value. Click to edit.</span>' : '';
+								 ?>
+								</div>
 							</div>
 							
 							<div><strong><?php echo t('Meta Keywords'); ?></strong>
 							<br />
 							<br />
-							<?php echo $form -> textarea('meta_keywords', $cobj -> getAttribute('meta_keywords'), array('title' => $cID)); ?>
+							<?php echo $form->textarea('meta_keywords', $cobj -> getAttribute('meta_keywords'), array('title' => $cID)); ?>
 							</div>
 							
 							<div><strong><?php echo t('Slug'); ?></strong>
 							<br />
 							<br />
-							<?php echo $form -> text('collection_handle', $cobj -> getCollectionHandle(), array('title' => $cID, 'class' => 'collectionHandle')); ?>
+							<?php echo $form->text('collection_handle', $cobj -> getCollectionHandle(), array('title' => $cID, 'class' => 'collectionHandle')); ?>
 							</div>
 							
 							<div class="updateButton">
@@ -159,6 +244,11 @@ if (count($pages) > 0) { ?>
 		$('#allSeoSubmit').click(function() {
 			$('.valueChanged').click();
 		});
+		
+		$('.metaInput').click(function(){
+			$(this).children().removeAttr('disabled');
+			$(this).children('.help-inline').hide();
+		})
 	});
 	</script>
 	<?php $pageList -> displaySummary(); ?>
