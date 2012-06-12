@@ -52,7 +52,7 @@ $pageSelector = Loader::helper('form/page_selector');
 				'500' => '500'
 			), $searchRequest['numResults'], array('style' => 'width:65px; margin: 0px 10px 0px 15px;'))?><span><?=t(' # Per Page'); ?></span>
 			<?php print $concrete_interface->submit('Search', $formID, $buttonAlign = 'right', 'searchSubmit'); ?><br />
-			<a style="display: block; margin-top: 15px;" id="searchUnderParent" href="#">Search Under Parent</a>
+			<a style="display: block; margin-top: 15px;" id="searchUnderParent" href="#"><?php echo t('Search Under Parent'); ?></a>
 			<div id="parentOptions" style="display: <?php echo $parentDialogOpen ? 'block' : 'none'; ?>">
 				<?php print $pageSelector->selectPage('cParentIDSearchField', 'ccm_selectSitemapNode');?>
 				<span class="ccm-search-option" search-field="parent">
@@ -68,9 +68,8 @@ $pageSelector = Loader::helper('form/page_selector');
 
 <div class="ccm-pane-body">
 <?php
-if (count($pages) > 0) { ?>	
-			
-	<?php $i = 0;
+if (count($pages) > 0) {
+	  $i = 0;
 		foreach($pages as $cobj) {
 			$cpobj = new Permissions($cobj);
 			$i++;
@@ -92,7 +91,7 @@ if (count($pages) > 0) { ?>
 							<strong><?php echo t('Page Type'); ?></strong>
 							<br />
 							<br />
-							<?php echo $cobj->getCollectionTypeName() ? $cobj->getCollectionTypeName() : 'Single Page'; ?>
+							<?php echo $cobj->getCollectionTypeName() ? $cobj->getCollectionTypeName() : t('Single Page'); ?>
 						</div>
 							
 						<div class="headings"><strong><?php echo t('Modified'); ?></strong>
@@ -127,7 +126,7 @@ if (count($pages) > 0) { ?>
 									 $titleInfo[disabled] = 'disabled'; 
 								}
 								echo $form->text('meta_title', $cobj->getAttribute('meta_title') ? $cobj->getAttribute('meta_title') : $autoTitle, $titleInfo); 
-								echo $titleInfo[disabled] ? '<br /><span class="help-inline">Default value. Click to edit.</span>' : '' ?>
+								echo $titleInfo[disabled] ? '<br /><span class="help-inline">' . t('Default value. Click to edit.') . '</span>' : '' ?>
 							</div>
 						</div>
 							
@@ -142,8 +141,8 @@ if (count($pages) > 0) { ?>
 								if(strlen($cobj -> getAttribute('meta_description')) <= 0) {
 									$descInfo[disabled] = 'disabled'; 
 								}
-								echo $form->textarea('meta_description', $cobj -> getAttribute('meta_description') ? $cobj -> getAttribute('meta_description') : $autoDesc, $descInfo); 
-								echo $descInfo[disabled] ? '<br /><span class="help-inline">Default value. Click to edit.</span>' : '';
+								echo $form->textarea('meta_description', $cobj->getAttribute('meta_description') ? $cobj->getAttribute('meta_description') : $autoDesc, $descInfo); 
+								echo $descInfo[disabled] ? '<br /><span class="help-inline">' . t('Default value. Click to edit.') . '</span>' : '';
 								 ?>
 							</div>
 						</div>
@@ -152,14 +151,14 @@ if (count($pages) > 0) { ?>
 							<strong><?php echo t('Meta Keywords'); ?></strong>
 							<br />
 							<br />
-							<?php echo $form->textarea('meta_keywords', $cobj -> getAttribute('meta_keywords'), array('title' => $cID)); ?>
+							<?php echo $form->textarea('meta_keywords', $cobj->getAttribute('meta_keywords'), array('title' => $cID)); ?>
 						</div>
 							
 						<div>
 							<strong><?php echo t('Slug'); ?></strong>
 							<br />
 							<br />
-							<?php echo $form->text('collection_handle', $cobj -> getCollectionHandle(), array('title' => $cID, 'class' => 'collectionHandle')); ?>
+							<?php echo $form->text('collection_handle', $cobj->getCollectionHandle(), array('title' => $cID, 'class' => 'collectionHandle')); ?>
 						</div>
 							
 						<div class="updateButton">
@@ -178,7 +177,7 @@ if (count($pages) > 0) { ?>
 	<?php } else { ?>
 		<div class="ccm-results-list-none"><?php echo t('No pages found.')?></div>
 	<?php  }
-	print $concrete_interface->button('Update All', '#', $buttonAlign='right', $innerClass=null, $args = array('id'=>'allSeoSubmit'));
+	print $concrete_interface->button(t('Update All'), '#', $buttonAlign='right', $innerClass=null, $args = array('id'=>'allSeoSubmit'));
  	?>
 	<div style="clear: left;"></div>
 	<script type="text/javascript">

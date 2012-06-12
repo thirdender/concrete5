@@ -105,7 +105,6 @@ class DashboardSystemSeoPageDataController extends Controller {
 		
 		$this->set('searchRequest', $req);
 		$this->set('parentDialogOpen', $parentDialogOpen);
-		$this->set('parentDialogOpen', $parentDialogOpen);
 		
 		return $pageList;
 	}
