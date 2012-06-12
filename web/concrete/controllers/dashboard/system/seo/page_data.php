@@ -10,8 +10,6 @@ class DashboardSystemSeoPageDataController extends Controller {
 		$html = Loader::helper('html');
 		$pageList = $this->getRequestedSearchResults();
 		if (is_object($pageList)) {
-			//$searchInstance = 'page' . time();
-			//$this->addHeaderItem('<script type="text/javascript">$(function() { ccm_sitemapSetupSearch(\'' . $searchInstance . '\'); });</script>');
 			$pages = $pageList->getPage();
 					
 			$this->set('pageList', $pageList);		
@@ -21,10 +19,8 @@ class DashboardSystemSeoPageDataController extends Controller {
 		}
 	}
 	
-	
 	public function saveRecord() {
         $success = false;
-        // do stuff
         $success = 'success';
         $cID = $this->post('cID');
         $c = Page::getByID($cID);
@@ -45,7 +41,6 @@ class DashboardSystemSeoPageDataController extends Controller {
         echo Loader::helper('json')->encode($result);
         exit;
     }
-	
 	
 	public function getRequestedSearchResults() {
 	
@@ -98,10 +93,6 @@ class DashboardSystemSeoPageDataController extends Controller {
 			$pageList->filterByCollectionTypeID($req['ctID']);
 		}
 
-		//if ($req['noTitle']){
-			//$this->filter('PagePaths.cPath', NULL, '=');
-		//}
-
 		if ($_REQUEST['noTitle'] == 1){
 			$pageList->filter('CollectionSearchIndexAttributes.ak_meta_title', NULL ,'=');
 			$this->set('titleCheck', true);
@@ -112,117 +103,10 @@ class DashboardSystemSeoPageDataController extends Controller {
 			$this->set('descCheck', true);
 		}
 		
-		/* 
-		if (is_array($req['selectedSearchField'])) {
-			foreach($req['selectedSearchField'] as $i => $item) {
-				// due to the way the form is setup, index will always be one more than the arrays
-				if ($item != '') {
-					switch($item) {
-						case 'keywords':
-							$keywords = htmlentities($req['keywords'], ENT_QUOTES, APP_CHARSET);
-							$pageList->filterByKeywords($keywords);
-							break;
-						case 'num_children':
-							$symbol = '=';
-							if ($req['cChildrenSelect'] == 'gt') {
-								$symbol = '>';
-							} else if ($req['cChildrenSelect'] == 'lt') {
-								$symbol = '<';
-							}
-							$pageList->filterByNumberOfChildren($req['cChildren'], $symbol);						
-							break;
-						case 'owner':
-							$ui = UserInfo::getByUserName($req['owner']);
-							if (is_object($ui)) {
-								$pageList->filterByUserID($ui->getUserID());
-							} else {
-								$pageList->filterByUserID(-1);
-							}
-							break;
-						case 'parent':
-							if (isset($req['_cParentAll'])) {
-								$req['cParentAll'] = $req['_cParentAll'];
-							}
-							if ($req['cParentIDSearchField'] > 0) {
-								if ($req['cParentAll'] == 1) {
-									$pc = Page::getByID($req['cParentIDSearchField']);
-									$cPath = $pc->getCollectionPath();
-									$pageList->filterByPath($cPath);
-								} else {
-									$pageList->filterByParentID($req['cParentIDSearchField']);
-								}
-							}
-							break;
-						case 'version_status':
-							if (isset($req['_cvIsApproved'])) {
-								$req['cvIsApproved'] = $req['_cvIsApproved'];
-							}
-							$pageList->filterByIsApproved($req['cvIsApproved']);
-							break;
-						case "date_public":
-							$dateFrom = $req['date_public_from'];
-							$dateTo = $req['date_public_to'];
-							if ($dateFrom != '') {
-								$dateFrom = date('Y-m-d', strtotime($dateFrom));
-								$pageList->filterByPublicDate($dateFrom, '>=');
-								$dateFrom .= ' 00:00:00';
-							}
-							if ($dateTo != '') {
-								$dateTo = date('Y-m-d', strtotime($dateTo));
-								$dateTo .= ' 23:59:59';								
-								$pageList->filterByPublicDate($dateTo, '<=');
-							}
-							break;
-						case "last_modified":
-							$dateFrom = $req['last_modified_from'];
-							$dateTo = $req['last_modified_to'];
-							if ($dateFrom != '') {
-								$dateFrom = date('Y-m-d', strtotime($dateFrom));
-								$pageList->filterByDateLastModified($dateFrom, '>=');
-								$dateFrom .= ' 00:00:00';
-							}
-							if ($dateTo != '') {
-								$dateTo = date('Y-m-d', strtotime($dateTo));
-								$dateTo .= ' 23:59:59';								
-								$pageList->filterByDateLastModified($dateTo, '<=');
-							}
-							break;
-						case "date_added":
-							$dateFrom = $req['date_added_from'];
-							$dateTo = $req['date_added_to'];
-							if ($dateFrom != '') {
-								$dateFrom = date('Y-m-d', strtotime($dateFrom));
-								$pageList->filterByDateAdded($dateFrom, '>=');
-								$dateFrom .= ' 00:00:00';
-							}
-							if ($dateTo != '') {
-								$dateTo = date('Y-m-d', strtotime($dateTo));
-								$dateTo .= ' 23:59:59';								
-								$pageList->filterByDateAdded($dateTo, '<=');
-							}
-							break;
-
-						default:
-							Loader::model('attribute/categories/collection');
-							$akID = $item;
-							$fak = CollectionAttributeKey::get($akID);
-							if (!is_object($fak) || (!($fak instanceof CollectionAttributeKey))) {
-								break;
-							}
-							
-							$type = $fak->getAttributeType();
-							$cnt = $type->getController();
-							$cnt->setRequestArray($req);
-							$cnt->setAttributeKey($fak);
-							$cnt->searchForm($pageList);
-							break;
-					}
-				}
-			}
-		} */ 
-
 		$this->set('searchRequest', $req);
 		$this->set('parentDialogOpen', $parentDialogOpen);
+		$this->set('parentDialogOpen', $parentDialogOpen);
+		
 		return $pageList;
 	}
 }
